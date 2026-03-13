@@ -2,7 +2,6 @@ flask
 flask-cors
 requests
 websocket-client
-beautifulsoup4
 simplejson
-quotexpy
+
 
