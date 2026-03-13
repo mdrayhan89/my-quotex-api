@@ -1,13 +1,22 @@
 import os
+import sys
 import time
 from flask import Flask, jsonify
 from flask_cors import CORS
-# এটি সরাসরি অনলাইন লাইব্রেরি থেকে কাজ করবে
-from quotexpy import Quotex
+
+# আপনার রিপোজিটরির ফোল্ডারটি পাইথন পাথে যোগ করা হচ্ছে
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
+try:
+    # আপনার ফোল্ডার থেকে ইমপোর্ট
+    from quotexapi.stable_api import Quotex
+except Exception as e:
+    print(f"Error importing local quotexapi: {e}")
 
 app = Flask(__name__)
 CORS(app)
 
+# আপনার ডিটেইলস
 EMAIL = "trrayhanislam786@gmail.com"
 PASSWORD = "Mdrayhana655"
 
@@ -26,7 +35,7 @@ def connect_client():
 
 @app.route('/')
 def home():
-    return jsonify({"status": "online", "message": "API is live and working!"})
+    return jsonify({"status": "online", "message": "API running using local folder"})
 
 @app.route('/api/candles/<pair>', methods=['GET'])
 def get_pair_candles(pair):
