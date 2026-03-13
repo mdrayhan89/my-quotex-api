@@ -3,5 +3,4 @@ flask-cors
 requests
 websocket-client
 simplejson
-
-
+git+https://github.com/flyreall/quotexpy.git
