@@ -1,11 +1,14 @@
 import os
 import time
 from flask import Flask, jsonify
-from quotexpy import Quotex
+from flask_cors import CORS
+# আপনার রিপোজিটরির ভেতরে থাকা ফোল্ডার থেকে ইমপোর্ট করা হচ্ছে
+from quotexapi.stable_api import Quotex
 
 app = Flask(__name__)
+CORS(app)
 
-# সরাসরি আপনার ডিটেইলস এখানে বসিয়ে দেওয়া হলো
+# সরাসরি আপনার ডিটেইলস
 EMAIL = "trrayhanislam786@gmail.com"
 PASSWORD = "Mdrayhana655"
 
@@ -25,14 +28,16 @@ def connect_client():
 
 @app.route('/')
 def home():
-    return jsonify({"status": "online", "message": "Quotex API is running"})
+    return jsonify({
+        "status": "online", 
+        "message": "Quotex API is running using local quotexapi folder"
+    })
 
 @app.route('/api/candles', methods=['GET'])
 def get_all_candles():
     if not connect_client():
         return jsonify({"status": "error", "message": "Could not connect to Quotex"})
     
-    # আপনার সেই ২৭টি পেয়ারের লিস্ট
     asset_list = [
         "USDINR_otc", "EURUSD_otc", "GBPUSD_otc", "USDJPY_otc", 
         "AUDUSD_otc", "USDCAD_otc", "USDCHF_otc", "NZDUSD_otc",
@@ -46,7 +51,7 @@ def get_all_candles():
     results = {}
     for asset in asset_list:
         try:
-            # প্রতিটি পেয়ারের শেষ ক্যান্ডেল নেওয়া হচ্ছে
+            # শেষ ১টি ক্যান্ডেল
             candles = client.get_candles(asset, 60, 1, time.time())
             if candles:
                 results[asset] = candles[-1]
@@ -55,7 +60,6 @@ def get_all_candles():
             
     return jsonify({"status": "success", "data": results})
 
-# নির্দিষ্ট পেয়ারের শেষ ১০০ ক্যান্ডেল দেখার জন্য নতুন রুট
 @app.route('/api/candles/<pair>', methods=['GET'])
 def get_pair_candles(pair):
     if not connect_client():
@@ -69,6 +73,5 @@ def get_pair_candles(pair):
         return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == "__main__":
-    # Render এর পোর্টের সাথে তাল মিলিয়ে রান করা
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
